@@ -30,6 +30,18 @@
 
     reconhawk fingerprint https://example.com
 
+## Persistent cache
+
+Scan results are cached locally for 30 minutes by default:
+
+    reconhawk scan example.com --cache reconhawk-cache.json
+
+Clear the cache:
+
+    reconhawk cache clear --file reconhawk-cache.json
+
+The cache is local to the user and does not grant authorization for discovered assets.
+
 ## Continuous monitoring
 
     reconhawk monitor example.com --interval 10m
