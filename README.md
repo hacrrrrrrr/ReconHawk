@@ -2,64 +2,98 @@
 
 **Automated reconnaissance and attack-surface discovery for bug hunters.**
 
-ReconHawk is a Go-based framework for organizing authorized reconnaissance into structured, deduplicated data. It focuses on discovery and observation rather than exploitation.
+ReconHawk is a Go-first reconnaissance framework for authorized security research. It collects and normalizes attack-surface observations without attempting exploitation.
 
-> **Authorized use only.** Use ReconHawk only against assets you own or targets explicitly permitted by the applicable bug-bounty program, penetration-test scope, or security-research authorization.
+> **Authorized use only.** Scan only assets you own or assets explicitly included in the applicable bug-bounty, pentest, or security-research scope.
 
-## Goals
+## Features
 
-- Lightweight Go-based reconnaissance
-- Bounded concurrency and configurable timeouts
-- HTTP/HTTPS observation and metadata collection
-- Security-header and TLS inventory
+- Concurrent HTTP/HTTPS probing
+- DNS resolution
+- Same-origin crawling
 - robots.txt, sitemap.xml and security.txt discovery
-- Same-origin URL discovery
-- JSON output for automation
-- Modular architecture for future discovery providers
+- Passive subdomain discovery through certificate transparency
+- Historical URL discovery through Common Crawl
+- JavaScript/HTML endpoint extraction
+- HTTP/TLS/security-header metadata
+- Technology fingerprinting
+- JSON and JSONL output
+- Bounded concurrency and timeouts
+- Modular provider architecture
+- Go core with Python/Java extension path
 
-## Planned pipeline
+## CLI
 
-```text
-Target → Scope → HTTP discovery → DNS/passive sources → URL/JS discovery → deduplication → report
-```
+    reconhawk --help
+
+Commands:
+
+    scan
+    subdomains
+    historical
+    js
+    fingerprint
+    version
+    help
+
+Examples:
+
+    reconhawk scan example.com --depth 2 --workers 8 --output report.json
+    reconhawk subdomains example.com
+    reconhawk historical example.com
+    reconhawk js https://example.com
+    reconhawk fingerprint https://example.com
+
+See [docs/INSTALL.md](docs/INSTALL.md) and [docs/USAGE.md](docs/USAGE.md).
+
+## Architecture
+
+    Target
+      │
+      ▼
+    Go Core ── Scope ── Scheduler ── Dedup ── Output
+      │
+      ├── HTTP / DNS / crawler
+      ├── Passive providers
+      ├── Historical URLs
+      ├── JS endpoint extraction
+      └── Technology fingerprints
+              │
+              └── future Python / Java engines
+
+Go remains the primary runtime. Other languages are optional specialized extensions, not required dependencies.
 
 ## Roadmap
 
 - [x] Go CLI foundation
 - [x] Concurrent HTTP probing
 - [x] DNS resolution
-- [ ] Passive subdomain providers
-- [ ] JavaScript endpoint extraction
-- [ ] Historical URL providers
-- [ ] Technology fingerprinting
-- [x] Same-origin scope filtering
-- [x] JSON and JSONL reports
-- [x] Bounded concurrency and request timeout
-- [ ] Plugin API
-- [ ] Continuous monitoring
+- [x] Passive subdomain provider
+- [x] JavaScript endpoint extraction
+- [x] Historical URL provider
+- [x] Technology fingerprinting
+- [x] Scope-aware same-origin filtering
+- [x] JSON / JSONL reports
+- [x] Timeout and concurrency controls
+- [ ] Stable external plugin API
+- [ ] Continuous monitoring daemon
+- [ ] Additional passive providers
+- [ ] Persistent result cache
 
 ## Project layout
 
-```text
-ReconHawk/
-├── cmd/reconhawk/       # CLI
-├── internal/recon/      # discovery engine
-├── docs/                # documentation
-├── examples/            # examples
-├── tests/               # tests
-├── go.mod
-├── LICENSE
-└── README.md
-```
-
-## Contributing
-
-Issues and pull requests are welcome. Keep contributions focused on authorized reconnaissance, reliability, reproducibility and clean output.
+    ReconHawk/
+    ├── cmd/reconhawk/
+    ├── internal/recon/
+    ├── docs/
+    ├── examples/
+    ├── tests/
+    └── .github/
 
 ## Sponsorship & inquiries
 
 **Kritik Bhattarai**  
-Email: **hunterkritik@gmail.com**
+**hunterkritik@gmail.com**
 
 ## License
 
