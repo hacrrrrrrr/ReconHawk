@@ -30,6 +30,20 @@
 
     reconhawk fingerprint https://example.com
 
+## Security checks
+
+Run real, non-destructive HTTP security checks:
+
+    reconhawk check https://example.com
+
+Write findings to JSON:
+
+    reconhawk check https://example.com --output findings.json
+
+Checks currently include response security headers, wildcard CORS, cookie security attributes, and server-header disclosure. Findings include a stable rule ID, severity, URL, evidence, and remediation.
+
+These checks do not upload files, execute commands on targets, open reverse shells, or attempt destructive exploitation. Use them only on assets you are authorized to assess.
+
 ## Persistent cache
 
 Scan results are cached locally for 30 minutes by default:
