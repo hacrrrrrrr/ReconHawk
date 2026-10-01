@@ -22,6 +22,7 @@ func main() {
  case "historical": historical(os.Args[2:])
  case "js": js(os.Args[2:])
  case "fingerprint": fingerprint(os.Args[2:])
+ case "monitor": monitor(os.Args[2:])
  default: fmt.Fprintf(os.Stderr,"unknown command %q\n",os.Args[1]); help(); os.Exit(2)
  }
 }
@@ -69,6 +70,27 @@ func fingerprint(args []string) {
  r,e:=recon.Scan(recon.Options{Target:fs.Arg(0),Workers:1,Timeout:10*time.Second,Depth:0});if e!=nil{fatal(e)};writeJSON(r.Observations,"")
 }
 
+
+func monitor(args []string) {
+ fs:=flag.NewFlagSet("monitor",flag.ExitOnError)
+ fs.Usage=func(){fmt.Println("Usage: reconhawk monitor <target> [flags]");fs.PrintDefaults()}
+ interval:=fs.Duration("interval",5*time.Minute,"time between scans")
+ iterations:=fs.Int("iterations",0,"number of scans; 0 means until interrupted")
+ workers:=fs.Int("workers",4,"maximum concurrent requests")
+ timeout:=fs.Duration("timeout",8*time.Second,"request timeout")
+ depth:=fs.Int("depth",1,"same-origin crawl depth")
+ fs.Parse(args)
+ if fs.NArg()!=1{fs.Usage();os.Exit(2)}
+ ctx:=context.Background()
+ err:=recon.Monitor(ctx,recon.MonitorOptions{Scan:recon.Options{Target:fs.Arg(0),Workers:*workers,Timeout:*timeout,Depth:*depth},Interval:*interval,Iterations:*iterations},func(r *recon.Report)error{return writeJSONValue(r)})
+ if err!=nil&&err!=context.Canceled{fatal(err)}
+}
+
+func writeJSONValue(v any) error {
+ b,e:=json.Marshal(v);if e!=nil{return e}
+ _,e=fmt.Println(string(b));return e
+}
+
 func writeJSON(v any,path string){b,e:=json.MarshalIndent(v,"","  ");if e!=nil{fatal(e)};b=append(b,'\n');if path==""{fmt.Print(string(b));return};if e=os.WriteFile(path,b,0644);e!=nil{fatal(e)}}
 func fatal(e error){fmt.Fprintln(os.Stderr,"error:",e);os.Exit(1)}
 
@@ -80,7 +102,8 @@ func help(){
  fmt.Println("  subdomains    passive certificate-transparency discovery")
  fmt.Println("  historical    historical URLs from Common Crawl")
  fmt.Println("  js             JavaScript endpoint extraction")
- fmt.Println("  fingerprint   technology identification")
+ fmt.Println("  fingerprint   technology identification
+  monitor       repeatedly scan an authorized target")
  fmt.Println("  version        print version")
  fmt.Println("  help           show help")
  fmt.Println("\nExamples:")
