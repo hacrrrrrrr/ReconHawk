@@ -17,6 +17,7 @@ ReconHawk is a Go-first reconnaissance framework for authorized security researc
 - JavaScript/HTML endpoint extraction
 - HTTP/TLS/security-header metadata
 - Technology fingerprinting
+- Real non-destructive security checks with evidence and remediation
 - JSON and JSONL output
 - Bounded concurrency and timeouts
 - Modular provider architecture
@@ -33,6 +34,9 @@ Commands:
     historical
     js
     fingerprint
+    check
+    monitor
+    cache
     version
     help
 
@@ -43,6 +47,7 @@ Examples:
     reconhawk historical example.com
     reconhawk js https://example.com
     reconhawk fingerprint https://example.com
+    reconhawk check https://example.com
 
 See [docs/INSTALL.md](docs/INSTALL.md) and [docs/USAGE.md](docs/USAGE.md).
 
@@ -79,6 +84,7 @@ Go remains the primary runtime. Other languages are optional specialized extensi
 - [x] Continuous monitoring command
 - [x] Additional passive providers
 - [x] Persistent result cache
+- [x] Non-destructive security verification/reporting
 
 ## Project layout
 
