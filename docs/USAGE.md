@@ -1,48 +1,50 @@
 # ReconHawk CLI Usage
 
-## Global help
+## Help
 
     reconhawk --help
-    reconhawk help
-
-## Scan
-
-    reconhawk scan example.com
-    reconhawk scan example.com --depth 2 --workers 8 --timeout 10s --output report.json
-    reconhawk scan example.com --jsonl observations.jsonl
-
-## Passive subdomains
-
-Uses certificate-transparency data through crt.sh.
-
-    reconhawk subdomains example.com
-
-## Historical URLs
-
-Uses Common Crawl indexes.
-
-    reconhawk historical example.com
-
-## JavaScript endpoints
-
-Fetches an authorized URL and extracts HTTP/HTTPS endpoints and same-origin paths.
-
-    reconhawk js https://example.com
-
-## Technology fingerprinting
-
-    reconhawk fingerprint https://example.com
-
-## Version
-
-    reconhawk version
-
-Every command accepts its own help flag:
-
     reconhawk scan --help
     reconhawk subdomains --help
     reconhawk historical --help
     reconhawk js --help
     reconhawk fingerprint --help
+    reconhawk monitor --help
 
-ReconHawk is reconnaissance-only. It does not exploit discovered endpoints.
+## Scan
+
+    reconhawk scan example.com --depth 2 --workers 8 --timeout 10s --output report.json
+
+## Passive subdomains
+
+    reconhawk subdomains example.com
+
+## Historical URLs
+
+    reconhawk historical example.com
+
+## JavaScript endpoints
+
+    reconhawk js https://example.com
+
+## Technology fingerprint
+
+    reconhawk fingerprint https://example.com
+
+## Continuous monitoring
+
+    reconhawk monitor example.com --interval 10m
+    reconhawk monitor example.com --interval 1m --iterations 10
+
+Monitoring emits JSON snapshots suitable for logs or downstream automation.
+
+## Plugin API
+
+A plugin executable receives the target as its first argument and writes one JSON object to stdout.
+
+Example:
+
+    {"finding":"custom observation","value":"example"}
+
+The Go API exposes RunPlugin so applications can integrate language-specific tooling without coupling it to the core.
+
+Only use ReconHawk against authorized assets.
