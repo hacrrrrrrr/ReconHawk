@@ -83,12 +83,38 @@ Go remains the primary runtime. Other languages are optional specialized extensi
 ## Project layout
 
     ReconHawk/
-    ├── cmd/reconhawk/
-    ├── internal/recon/
+    ├── cmd/
+    │   └── reconhawk/             # CLI entrypoint
+    ├── internal/
+    │   └── recon/                 # Go reconnaissance engine
+    │       ├── crawler/            # HTTP discovery/crawling
+    │       ├── providers/          # passive/historical providers
+    │       ├── fingerprints/       # technology detection
+    │       ├── cache/              # persistent result cache
+    │       ├── plugins/             # plugin execution API
+    │       └── monitor/             # continuous monitoring
+    ├── plugins/
+    │   ├── go/                    # Go extensions
+    │   ├── python/                # Python extensions
+    │   ├── java/                  # Java extensions
+    │   ├── javascript/            # JS/TypeScript extensions
+    │   ├── rust/                  # Rust extensions
+    │   └── shell/                 # shell/provider adapters
     ├── docs/
-    ├── examples/
-    ├── tests/
-    └── .github/
+    │   ├── INSTALL.md
+    │   ├── USAGE.md
+    │   ├── CACHE.md
+    │   └── PASSIVE_PROVIDERS.md
+    ├── examples/                  # example configurations/workflows
+    ├── tests/                     # integration/regression tests
+    ├── .github/
+    │   └── workflows/             # CI and release automation
+    ├── go.mod
+    └── LICENSE
+
+### Polyglot architecture
+
+Go remains the core runtime for concurrency, orchestration, scope handling and output. Other languages are optional external engines rather than mandatory dependencies. This keeps the default installation simple while allowing specialized modules where another ecosystem is useful. This style of language-agnostic external plugins is a common way to isolate runtimes and keep the host architecture modular. citeturn0search4turn0search5
 
 ## Sponsorship & inquiries
 
