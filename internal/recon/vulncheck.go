@@ -34,6 +34,7 @@ type SecurityReport struct {
 func CheckTarget(ctx context.Context,target string,timeout time.Duration) (*SecurityReport,error) {
  if timeout<=0 {timeout=8*time.Second}
  start:=time.Now()
+ target,err=normalizeTarget(target);if err!=nil{return nil,err}
  client:=&http.Client{Timeout:timeout}
  req,err:=http.NewRequestWithContext(ctx,http.MethodGet,target,nil);if err!=nil{return nil,err}
  req.Header.Set("User-Agent","ReconHawk/0.3 (+authorized-security-research)")
