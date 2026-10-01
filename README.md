@@ -75,8 +75,8 @@ Go remains the primary runtime. Other languages are optional specialized extensi
 - [x] Scope-aware same-origin filtering
 - [x] JSON / JSONL reports
 - [x] Timeout and concurrency controls
-- [ ] Stable external plugin API
-- [ ] Continuous monitoring daemon
+- [x] Stable external plugin API
+- [x] Continuous monitoring command
 - [ ] Additional passive providers
 - [ ] Persistent result cache
 
