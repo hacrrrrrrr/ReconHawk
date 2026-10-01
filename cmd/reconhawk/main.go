@@ -58,8 +58,9 @@ func historical(args []string) {
 func js(args []string) {
  fs:=flag.NewFlagSet("js",flag.ExitOnError);fs.Usage=func(){fmt.Println("Usage: reconhawk js <url>")}
  fs.Parse(args);if fs.NArg()!=1{fs.Usage();os.Exit(2)}
- r,e:=recon.Scan(recon.Options{Target:fs.Arg(0),Workers:2,Timeout:10*time.Second,Depth:0});if e!=nil{fatal(e)}
- for _,o:=range r.Observations {writeJSON(recon.ExtractJavaScriptEndpoints("",nil),"");_ = o}
+ ctx,cancel:=context.WithTimeout(context.Background(),15*time.Second);defer cancel()
+ body,base,e:=recon.FetchBody(ctx,fs.Arg(0),15);if e!=nil{fatal(e)}
+ writeJSON(recon.ExtractJavaScriptEndpoints(body,base),"")
 }
 
 func fingerprint(args []string) {
