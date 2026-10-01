@@ -77,8 +77,8 @@ Go remains the primary runtime. Other languages are optional specialized extensi
 - [x] Timeout and concurrency controls
 - [x] Stable external plugin API
 - [x] Continuous monitoring command
-- [ ] Additional passive providers
-- [ ] Persistent result cache
+- [x] Additional passive providers
+- [x] Persistent result cache
 
 ## Project layout
 
