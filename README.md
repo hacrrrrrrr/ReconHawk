@@ -25,16 +25,16 @@ Target → Scope → HTTP discovery → DNS/passive sources → URL/JS discovery
 
 ## Roadmap
 
-- [ ] Go CLI foundation
-- [ ] Concurrent HTTP probing
-- [ ] DNS resolution
+- [x] Go CLI foundation
+- [x] Concurrent HTTP probing
+- [x] DNS resolution
 - [ ] Passive subdomain providers
 - [ ] JavaScript endpoint extraction
 - [ ] Historical URL providers
 - [ ] Technology fingerprinting
-- [ ] Scope-aware filtering
-- [ ] JSONL / CSV / HTML reports
-- [ ] Rate-limit and retry controls
+- [x] Same-origin scope filtering
+- [x] JSON and JSONL reports
+- [x] Bounded concurrency and request timeout
 - [ ] Plugin API
 - [ ] Continuous monitoring
 
