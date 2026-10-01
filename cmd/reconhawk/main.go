@@ -10,7 +10,7 @@ import (
  "github.com/hacrrrrrrr/ReconHawk/internal/recon"
 )
 
-const version = "0.2.0"
+const version = "0.3.0"
 
 func main() {
  if len(os.Args) < 2 { help(); return }
@@ -24,8 +24,22 @@ func main() {
  case "fingerprint": fingerprint(os.Args[2:])
  case "monitor": monitor(os.Args[2:])
  case "cache": cacheCmd(os.Args[2:])
+ case "check": check(os.Args[2:])
  default: fmt.Fprintf(os.Stderr,"unknown command %q\n",os.Args[1]); help(); os.Exit(2)
  }
+}
+
+func check(args []string) {
+ fs:=flag.NewFlagSet("check",flag.ExitOnError)
+ fs.Usage=func(){fmt.Println("Usage: reconhawk check <url> [flags]");fs.PrintDefaults()}
+ timeout:=fs.Duration("timeout",8*time.Second,"HTTP request timeout")
+ output:=fs.String("output","","write JSON findings to file")
+ fs.Parse(args)
+ if fs.NArg()!=1{fs.Usage();os.Exit(2)}
+ ctx,cancel:=context.WithTimeout(context.Background(),*timeout);defer cancel()
+ target:=fs.Arg(0)
+ r,e:=recon.CheckTarget(ctx,target,*timeout);if e!=nil{fatal(e)}
+ writeJSON(r,*output)
 }
 
 func scan(args []string) {
@@ -119,9 +133,10 @@ func help(){
  fmt.Println("  subdomains    passive certificate-transparency discovery")
  fmt.Println("  historical    historical URLs from Common Crawl")
  fmt.Println("  js             JavaScript endpoint extraction")
- fmt.Println("  fingerprint   technology identification
-  monitor       repeatedly scan an authorized target
-  cache         manage persistent local results")
+ fmt.Println("  fingerprint   technology identification")
+ fmt.Println("  monitor       repeatedly scan an authorized target")
+ fmt.Println("  cache         manage persistent local results")
+ fmt.Println("  check         run non-destructive security checks")
  fmt.Println("  version        print version")
  fmt.Println("  help           show help")
  fmt.Println("\nExamples:")
