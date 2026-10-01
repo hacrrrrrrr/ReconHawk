@@ -6,6 +6,7 @@ import (
  "io"
  "net/http"
  "net/url"
+ "time"
 )
 
 func FetchBody(ctx context.Context, target string, timeoutSeconds int) (string,*url.URL,error) {
