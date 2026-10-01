@@ -1,0 +1,13 @@
+version: 1
+
+scope:
+  allow_subdomains: true
+  allow_external_hosts: false
+
+limits:
+  workers: 4
+  timeout: 8s
+  max_body_bytes: 2097152
+
+output:
+  format: json
