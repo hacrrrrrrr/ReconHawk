@@ -1,6 +1,6 @@
 package recon
 
-import ("context"; "crypto/tls"; "errors"; "fmt"; "io"; "net"; "net/http"; "net/url"; "sort"; "strings"; "sync"; "time")
+import ("context"; "crypto/tls"; "errors"; "fmt"; "io"; "net"; "net/http"; "net/url"; "regexp"; "sort"; "strings"; "sync"; "time")
 
 type Options struct { Target string; Workers int; Timeout time.Duration; Depth int }
 type Report struct { Target string; StartedAt time.Time; FinishedAt time.Time; Observations []Observation; DiscoveredURLs []string; DNS []DNSObservation }
@@ -22,5 +22,15 @@ func probe(c *http.Client,target string,s *url.URL)Observation{o:=Observation{UR
 func resolve(h string)[]DNSObservation{a,e:=net.LookupHost(h);o:=DNSObservation{Host:h,Addresses:a};if e!=nil{o.Error=e.Error()};sort.Strings(o.Addresses);return []DNSObservation{o}}
 func headers(h http.Header)map[string]string{out:=map[string]string{};for _,k:=range []string{"Content-Security-Policy","Strict-Transport-Security","X-Content-Type-Options","X-Frame-Options","Referrer-Policy","Permissions-Policy"}{if v:=h.Get(k);v!=""{out[k]=v}};return out}
 func tlsName(v uint16)string{if v==tls.VersionTLS13{return "TLS 1.3"};if v==tls.VersionTLS12{return "TLS 1.2"};return fmt.Sprintf("0x%x",v)}
-func links(body string,s *url.URL)[]string{out:=[]string{};lower:=strings.ToLower(body);for _,marker:=range []string{"href="","href='"}{pos:=0;for{idx:=strings.Index(lower[pos:],marker);if idx<0{break};idx+=pos;rest:=body[idx+len(marker):];end:=strings.IndexAny(rest,""'");if end<0{break};raw:=strings.TrimSpace(rest[:end]);u,e:=url.Parse(raw);if e==nil{u=s.ResolveReference(u);if (u.Scheme=="http"||u.Scheme=="https")&&strings.EqualFold(u.Hostname(),s.Hostname()){u.Fragment="";out=append(out,u.String())}};pos=idx+len(marker)+end+1;if pos>=len(body){break}}};return unique(out)}
+func links(body string,s *url.URL)[]string {
+ re:=regexp.MustCompile("(?i)(?:href|src)=[\\\"']([^\\\"'#]+)")
+ out:=[]string{}
+ for _,m:=range re.FindAllStringSubmatch(body,-1) {
+  u,e:=url.Parse(strings.TrimSpace(m[1]))
+  if e!=nil {continue}
+  u=s.ResolveReference(u)
+  if (u.Scheme=="http"||u.Scheme=="https")&&strings.EqualFold(u.Hostname(),s.Hostname()) {u.Fragment="";out=append(out,u.String())}
+ }
+ return unique(out)
+}
 func unique(in []string)[]string{m:=map[string]struct{}{};out:=[]string{};for _,x:=range in{if _,ok:=m[x];ok{continue};m[x]=struct{}{};out=append(out,x)};sort.Strings(out);return out}
