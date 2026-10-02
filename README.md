@@ -1,5 +1,7 @@
 # 🦅 ReconHawk
 
+**Latest release: `v0.3.0` — production foundation update (2026-10-02).**
+
 **Automated reconnaissance and attack-surface discovery for bug hunters.**
 
 ReconHawk is a Go-first reconnaissance framework for authorized security research. It collects and normalizes attack-surface observations without attempting exploitation.
@@ -7,6 +9,22 @@ ReconHawk is a Go-first reconnaissance framework for authorized security researc
 > **Authorized use only.** Scan only assets you own or assets explicitly included in the applicable bug-bounty, pentest, or security-research scope.
 
 ## Features
+
+### v0.3.0 highlights
+
+- Real Go implementation behind the documented CLI
+- Context-aware HTTP requests with bounded concurrency and timeouts
+- Same-origin crawl scope and URL deduplication
+- Persistent, atomic JSON cache with configurable TTL
+- Passive certificate-transparency subdomain collection
+- Common Crawl historical URL discovery
+- JavaScript endpoint extraction with bounded response reads
+- HTTP/TLS/DNS metadata and technology fingerprinting
+- Non-destructive security checks with evidence and remediation
+- Continuous monitoring with finite-iteration mode for CI/automation
+- JSON and JSONL report output
+- Go vet, tests and build verification in GitHub Actions
+- Dependency-light core with no third-party Go modules required
 
 - Concurrent HTTP/HTTPS probing
 - DNS resolution
