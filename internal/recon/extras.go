@@ -64,3 +64,48 @@ func CheckTarget(ctx context.Context, raw string, timeout time.Duration)(CheckRe
  for _,c:=range resp.Cookies(){if resp.Request.URL.Scheme=="https"&&!c.Secure{r.Findings=append(r.Findings,Finding{"RH-SEC-005","low",r.Target,"Cookie "+c.Name+" lacks Secure attribute","Set Secure on cookies sent over HTTPS."})};if !c.HttpOnly{r.Findings=append(r.Findings,Finding{"RH-SEC-006","low",r.Target,"Cookie "+c.Name+" lacks HttpOnly attribute","Use HttpOnly for cookies that do not need JavaScript access."})}}
  return r,nil
 }
+
+type Result struct {
+ URL string `json:"url"`
+ StatusCode int `json:"status_code,omitempty"`
+ FinalURL string `json:"final_url,omitempty"`
+ ContentType string `json:"content_type,omitempty"`
+ Server string `json:"server,omitempty"`
+ Technologies []string `json:"technologies,omitempty"`
+ SecurityHeaders map[string]string `json:"security_headers,omitempty"`
+ TLS *TLSInfo `json:"tls,omitempty"`
+ DNS []DNSObservation `json:"dns,omitempty"`
+ Findings []Finding `json:"findings,omitempty"`
+}
+
+func Fingerprint(raw string) (Result,error) {
+ r,e:=Scan(Options{Target:raw,Workers:1,Timeout:10*time.Second,Depth:0})
+ if e!=nil{return Result{},e}
+ if len(r.Observations)==0{return Result{URL:r.Target,DNS:r.DNS},nil}
+ o:=r.Observations[0]
+ return Result{URL:o.URL,StatusCode:o.StatusCode,FinalURL:o.FinalURL,ContentType:o.ContentType,Server:o.Server,Technologies:o.Technologies,SecurityHeaders:o.SecurityHeaders,TLS:o.TLS,DNS:r.DNS},nil
+}
+
+func Check(raw string) (Result,error) {
+ cr,e:=CheckTarget(context.Background(),raw,8*time.Second)
+ if e!=nil{return Result{},e}
+ return Result{URL:cr.Target,StatusCode:cr.StatusCode,Findings:cr.Findings},nil
+}
+
+func Subdomains(domain string) ([]string,error) {
+ rows,e:=CRTShProvider{}.Run(context.Background(),domain)
+ return rows,e
+}
+
+func Historical(domain string) ([]string,error) {
+ rows,e:=FetchCommonCrawl(context.Background(),domain)
+ if e!=nil{return nil,e}
+ out:=make([]string,0,len(rows));for _,r:=range rows{out=append(out,r.URL)}
+ return out,nil
+}
+
+func JavaScript(raw string) ([]string,error) {
+ body,final,e:=FetchBody(context.Background(),raw,10*time.Second)
+ if e!=nil{return nil,e}
+ return ExtractJavaScriptEndpoints(body,final),nil
+}
